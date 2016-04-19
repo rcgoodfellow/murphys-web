@@ -88,6 +88,88 @@ Like we said before, the reduce function does a pairwise reduction over a sequen
 
 All of this is figured out at the latest possible moment by the compiler, which also happens to be the first moment at which it has enough information to determine all the types in play. That is the moment at which the function that is returned from ```reduce``` is itself called. In the  [basic pipe code](#basic_pipe_code), the function is called by the pipe operator (another template) which delivers as the argument the output of the previous lambda whose return type is also deduced at compile time. Note that none of this would work without the auto lambda. Well that's not actually grue, given the proper template meta-programming black magic this could be made to work without the auto lambda, but it would likely be completely inscrutable code. But what we have here is relatively straightforward type deduction that done by the compiler and _not_ our template code that is approaching Haskell-esk power, which is quite nifty.
 
+The astute reader may notice that we don't actually need two templates to do this. We could just write the following directly.
+
+```c++
+template < typename F >
+auto
+reduce(F f)
+{
+  return [f](auto && c)
+  { 
+    return std::accumulate(c.begin()+1, c.end(), *c.begin(), f);
+  };
+}
+```
+
+And indeed this works just fine. I just factored out a second template to introduce the concept of using variadic templates to simplify passing complex templates around polymorphically. Now consider the following code for a ```map``` function in which the factorization becomes necessary. First the caller facing API level templates. For map there are two. 
+
+The first one is for a map that transforms the contents of the collection with the given function ```f``` and returns back the same type of collection it got in. The second one allows the user to specify an additional template argument that will transform the collection as well into a new type of collection.
+
+```c++
+template < typename F >
+auto
+map(F f)
+{
+  return [f](auto & c){ return do_map(c, f); };
+}
+```
+
+```c++
+template < template <typename, typename...> class C, typename F >
+auto
+map(F f)
+{
+  return [f](auto & c){ return do_map<C>(c, f); };
+}
+```
+
+Now for the implementation of these templates. Beginning with the implementation that returns the same type of collection as it receives by default.
+
+```c++
+template < 
+  typename A,
+  typename F,
+  template <typename, typename...> class C, 
+  template <typename, typename...> class CC = C,
+  typename ...AT
+>
+auto
+do_map (C<A,AT...> & c, F f) 
+{
+  using T = typename std::result_of<F(A&)>::type;
+  CC<T> result;
+  result.reserve(c.size());
+  std::transform(c.begin(), c.end(), std::inserter(result, result.end()), f);
+  return result;
+}
+```
+
+In the first line of the body of this template we construct the value type of the collection it is going to return. The ```typename``` keyword indicates to the compiler that we are specifying a type and the [result_of](http://en.cppreference.com/w/cpp/types/result_of) template is a standard library template that does the metaprogramming work of determining the result of a function type applied to an argument type. Using the computed type ```T``` we construct an instance of the result container as ```C<T>```. The template ```CC``` is extracted by the compiler when the template ```do_map``` is called. Notice that in this function ```CC``` is defaulted to the value of ```C```. However this default can be explicitly overriden depending on how the template is called as we will see in the next piece of code. Once the result container is constructed, the space to fill it with transformed variables is reserved. This is not necessary but improves performance for large collections, because we know the size of the input data exactly, we can allocate the required output collection space up front all at once instead of letting the C++ runtime expand the memory allocation on an as-needed basis. Again not reinventing the wheel we use the standard library [transform](http://en.cppreference.com/w/cpp/algorithm/transform) function to actually perform the mapping computation.
+
+Here the two template factorization becomes necessary so that we 
+
+1. use the first template with the auto lambda to deduce types just in time
+2. use the second template to extract the appropriate types to materialize the result
+
+The next static overload of the ```do_map``` function allows an output container type to be specified. This function is simply a rearrangement of the template arguments so ```CC``` can go first and thus be explicitly specified by a caller. Since both templates are available, if ```CC``` is not explicitly specified [SFINAE](http://en.cppreference.com/w/cpp/language/sfinae) kicks in and the compiler will choose the template above instead.
+
+```c++
+template < 
+  template <typename, typename...> class CC,
+  typename A,
+  typename F, 
+  template <typename, typename...> class C,
+  typename ...AT
+>
+auto
+do_map (C<A,AT...> & c, F f) 
+{
+  return do_map<A, F, C, CC, AT...>(c, f);
+}
+```
+
+
 Finally an only slightly less trivial example
 
 ```c++
