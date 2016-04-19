@@ -2,6 +2,7 @@
 layout: post
 title: "C++ Data Pipes"
 date: 2016-04-18 18:00:00
+disqusid: 1947
 categories: C++
 ---
 

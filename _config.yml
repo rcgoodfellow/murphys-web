@@ -11,7 +11,7 @@ email: rgoodfel@isi.edu
 description: > # this means to ignore newlines until "baseurl:"
   distributed code ... writing, building, testing & securing
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://yourdomain.com" # the base hostname & protocol for your site
+url: "http://murphy.isi.edu" # the base hostname & protocol for your site
 twitter_username: rcgoodfellow
 github_username:  rcgoodfellow
 
