@@ -2,11 +2,12 @@
  * Syntax highlighting styles
  */
 .highlight {
-    background: #2D241E;
+    //background: #2D241E;
+    background: #DDDDDE;
     @extend %vertical-rhythm;
 
     .highlighter-rouge & {
-      background: #2D241E;
+      background: #DDDDDE;
     }
 
     .c     { color: #998; font-style: italic } // Comment
@@ -47,7 +48,7 @@
     .nt    { color: #000080 } // Name.Tag
     .nv    { color: #008080 } // Name.Variable
     .ow    { color: #111 } // Operator.Word
-    .w     { color: #2D241E } // Text.Whitespace
+    .w     { color: #DDDDDE } // Text.Whitespace
     .mf    { color: #476F30 } // Literal.Number.Float
     .mh    { color: #476F30 } // Literal.Number.Hex
     .mi    { color: #476F30 } // Literal.Number.Integer

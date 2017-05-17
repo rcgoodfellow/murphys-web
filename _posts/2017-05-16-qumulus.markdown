@@ -1,0 +1,47 @@
+---
+layout: post
+title: "Qumulus - Controlling VLANs on Cumulus with QBridge, AgentX and Netlink"
+date: 2017-05-16 18:00:00
+disqusid: 1948
+categories: Cumulus Linux Netlink SNMP AgentX Go
+---
+
+Most TOR switches these days support using the [QBridge SNMP protocol](https://tools.ietf.org/html/rfc4363) to control VLANs. This is [half way true for Cumulus switches](https://docs.cumulusnetworks.com/display/DOCS/SNMP+Monitoring). There is support for fetching VLAN tables from the switch via QBridge, but no support for modifying them. This article presents the design and implementation of an [AgentX](https://tools.ietf.org/html/rfc2741) subagent written in Go that aims to provide full QBridge support for Cumulus through [Netlink](https://wiki.linuxfoundation.org/networking/netlink).
+
+## Design
+The component level design of the Cumulus QBridge controller (CQC) is depicted below. Cumulus Linux comes stock with the [snmpd](http://net-snmp.sourceforge.net/docs/man/snmpd.html) agent running as a service. The q-agent operates as an extension to snmpd through the AgentX protocol. It registers itself with snmpd as an agent capable of handling the [QBridge subtree](http://www.mibdepot.com/cgi-bin/getmib4.cgi?abc=0&n=Q-BRIDGE-MIB&r=alcatel&f=IETF_Q_BRIDGE.mib&t=tree&v=v2&i=0&obj=VlanId) so when snmpd gets QBridge requests it will pass them along to the q-agent. The q-agent then implements VLAN control through the Linux Netlink communication mechanism.
+
+![anatomy]({{site.url}}/img/anatomy.png){: .center-image }
+
+## AgentX Implementation
+I built the [agx](https://github.com/rcgoodfellow/agx) specifically for this project. There are already a few other AgentX libraries for Go out there. However, none of the ones I found seem to support setting variables, and most seem to be built with a relatively static devices in mind. agx is purposely designed to support managing highly dynamic devices. Both set and get operations are exposed through functional interfaces that allow code to be executed when GET or SET operations come through the pipes. 
+
+The full code for the q-bridge agent is [here](https://github.com/rcgoodfellow/agx/blob/master/qbridge/qbridge.go). Note that this code currently depends on [my fork](https://github.com/rcgoodfellow/netlink) of [vishvanada's popular Go Netlink library](https://github.com/vishvananda/netlink) that starts to implement some of the [iproute2](https://wiki.linuxfoundation.org/networking/iproute2) [bridge](http://man7.org/linux/man-pages/man8/bridge.8.html) functionality. I hope to contribute this code back upstream soon.
+
+### Subagent Registration
+
+The first part of being an AgentX subagent is registering with a master agent. This is accomplished as follows.
+
+```go
+const qbridge  = "1.3.6.1.2.1.17"
+id, descr := "1.2.3.4.7", "qbridge-agent"
+c, err := agx.Connect(&id, &descr)
+if err != nil {
+  log.Fatalf("connection failed %v", err)
+}
+defer c.Disconnect()
+
+err = c.Register(qbridge)
+if err != nil {
+  log.Fatalf("agent registration failed %v", err)
+}
+defer func() {
+  err = c.Unregister(qbridge)
+  if err != nil {
+    log.Fatalf("agent registration failed %v", err)
+  }
+}()
+
+```
+
+## Netlink Controller Implementation
