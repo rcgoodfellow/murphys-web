@@ -1,3 +1,4 @@
 #!/bin/bash
 #rvm use system
-sudo -E jekyll serve --host 0.0.0.0 --port 80
+jekyll=/home/ry/.rvm/gems/ruby-2.4.0/bin/jekyll
+sudo -E $jekyll serve --host 0.0.0.0 --port 80

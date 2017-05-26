@@ -7,11 +7,11 @@
 
 # Site settings
 title: Murphy's Web
-email: rgoodfel@isi.edu
+email: ry@goodwu.net
 description: > # this means to ignore newlines until "baseurl:"
   distributed code ... writing, building, testing & securing
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://murphy.isi.edu" # the base hostname & protocol for your site
+url: "https://dev.goodwu.net" # the base hostname & protocol for your site
 twitter_username: rgoodfel
 github_username:  rcgoodfellow
 

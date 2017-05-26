@@ -6,13 +6,20 @@ layout: default
 
   <h1 class="page-heading">Posts</h1>
 
-  <ul class="post-list">
+  <ul class="post-list" itemscope itemtype="http://schema.org/Blog">
     {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+      <li itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+        <span class="post-meta">
+		<time itemprop="datePublished" datetime="{{ post.date | date_to_xmlschema }}">
+			{{ post.date | date: "%b %-d, %Y" }}
+		</time>
+	</span>
+	<span itemprop="author" hidden> Ryan Goodfellow </span>
 
         <h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}" itemprop="url">
+		<span itemprop="name">{{ post.title }}</span>
+	  </a>
         </h2>
       </li>
     {% endfor %}
