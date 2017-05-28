@@ -12,7 +12,7 @@ Testing distributed systems is hard. In this article I will cover the approach a
 
 Consider the following workflow.
 
-![lifcycle](http://mirror.deterlab.net/rvn/doc/dt-lifecycle.png)
+![lifcycle](https://mirror.deterlab.net/rvn/doc/dt-lifecycle.png)
 
 The first thing to be aware of when testing a distributed system is the _**environment**_ in which the testing itself will taking place. Here I define an environment as _the interconnection and configuration of hosts and network appliances_  e.g., computers, phones, switches, routers, access points etc. - and how they are connected.
 
@@ -49,7 +49,7 @@ In the article that follows, I am going to walk through a complete example of mo
 # System Under Test
 The system under test is a [VLAN](https://en.wikipedia.org/wiki/Virtual_LAN) management system for [Cumulus Linux](https://cumulusnetworks.com/products/cumulus-linux/). Here is the system diagram.
 
-<img src="http://mirror.deterlab.net/rvn/doc/2net-sys.png" class="center-image" style="width: 50%" />
+<img src="https://mirror.deterlab.net/rvn/doc/2net-sys.png" class="center-image" style="width: 50%" />
 
 The basic function of this system is to regulate connectivity between hosts on a network through virtual LANs. The implementation is distributed across a control agent and an implementation agent. The control agent issues the commands required to achieve a desired virtual LAN setup (using the [QBridge](https://tools.ietf.org/html/rfc4363) protocol) and the implementation agent carries out those commands by configuring the Cumulus switch using [Netlink](https://wiki.linuxfoundation.org/networking/netlink). The control agent can exist anywhere on the network and there is one implementation agent per switch.
 
@@ -112,7 +112,7 @@ The Raven configuration subsystem uses [Ansible](https://www.ansible.com). Raven
 #### Materialization
 This assumes you have set up Raven on your system. [Getting setup](https://github.com/rcgoodfellow/raven/blob/master/README.md#installing) is pretty simple. When you open the model in the Raven web interface you will be greeted with a screen that looks like this.
 
-<img src="http://mirror.deterlab.net/rvn/doc/2net-web.png" class="center-image" style="width: 70%" />
+<img src="https://mirror.deterlab.net/rvn/doc/2net-web.png" class="center-image" style="width: 70%" />
 
 This particular model assumes that we have the following code repositories in a top level directory called `/space`.
 
@@ -165,7 +165,7 @@ Each test has:
 
 When all of the success criteria are observable by the test runner, the test is considered to be a success. If any of the failure criteria are observable by the test runner, the test is considered to have failed. Collectively each triple is referred to as a test diagnostic. Diagnostics are visible to the test runner when it can see them in the Walrus collector. A collector is simply a [Redis](https://redis.io) database with a few [associated conventions](https://github.com/rcgoodfellow/walrustf/blob/master/doc/dspec.md) to support the Walrus test semantics. The Walrus test framework comes with a test runner called [wtf](https://github.com/rcgoodfellow/walrustf/blob/master/wtf/wtf.go) is used to run tests. Just point it at you test JSON file and let it run. The output looks like this
 
-<img src="http://mirror.deterlab.net/rvn/doc/walrus-out.png" style="width:50%" class="center-image" />
+<img src="https://mirror.deterlab.net/rvn/doc/walrus-out.png" style="width:50%" class="center-image" />
 
 WalrusTF adopts a driver model when it comes to language support. Right now there are drivers for C, Python, Perl and Bash. Contributions for other new languages are always welcome. The test we are working with now uses the Bash driver on the `n0` and `n1` nodes. The [code](https://github.com/rcgoodfellow/raven/blob/master/models/2net/config/files/node/pingtest.sh) is very simple, it just tries to ping some node repeatedly on a 1 second interval. If the ping is successful, an `ok` diagnostic is sent to walrus with the hostname of the participant running the test. If the ping is not successful a `warning` diagnostic is sent.
 
@@ -191,6 +191,6 @@ In concert with the [ansible test launch script](https://github.com/rcgoodfellow
 
 What we have shown here today is a way to rapidly model, materialize and enter the code-build-test cycle for distributed systems.
 
-<img src="http://mirror.deterlab.net/rvn/doc/codable-env.png" class="center-image" style="width: 90%" />
+<img src="https://mirror.deterlab.net/rvn/doc/codable-env.png" class="center-image" style="width: 90%" />
 
 Please check out the [raven](https://github.com/rcgoodfellow/raven) and [walrustf](https://github.com/rcgoodfellow/walrus) projects and try them out for your own distributed systems engineering problems. Contributions and comments welcome. 
