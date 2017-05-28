@@ -2,7 +2,7 @@
 layout: post
 title: "Toward a New Frontier for Dynamical Systems"
 date: 2017-05-17 18:00:00
-disqusid: 1949
+disqusid: 1951
 categories: DAE Python SciPy DyPy
 ---
 
