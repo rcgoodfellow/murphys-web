@@ -277,6 +277,8 @@ PLAY RECAP *********************************************************************
 ## Building you a Testbed
 Ok, so once you have poked around in the environment a bit. It's time to actually turn it into a Deter testbed. The first thing to do is build the preboot stage components, deterboot and the linux-mfs.
 
+__Note that in the steps that follow, building deterboot and the linux mfs is now optional as the installer will fetch prebuilt artifacts for these. If you are not working on the bootloader or the mfs you don't need to bother with building them__
+
 ### Building deterboot
 
 ```shell
@@ -339,7 +341,7 @@ FSDIR_SHARE=/share
 The first thing we must do is build and install users. This is where all the file systems live, so it gets installed first. ssh into the machine and change directory to `/tmp/config` where you will find the script [build_install.sh](https://github.com/rcgoodfellow/raven/blob/master/models/3bed/config/files/users/build_install.sh). Run this script to build and install the users software. This script will automatically reboot the machine.
 
 ### Building and installing `boss`
-After users has rebooted, you can go ahead and install boss. The process is exactly the same, execute `/tmp/config/build_install.sh` (both of these as root), and the software will automatically build and install. After boss installs there are some additional configuration steps that need to happen. Remember rvn-ansbile, well now we need to run `rvn-ansible 3bed boss` on two scripts [boss-post-install.yml](https://github.com/rcgoodfellow/raven/blob/master/models/3bed/config/boss_post_install.yml) and [boss-update-preboot.yml](https://github.com/rcgoodfellow/raven/blob/master/models/3bed/config/boss_update_preboot.yml). The post install automation performs futher setup on the testbed that brings it almost to a level of full functionality. Read the file to see what it is up to. 
+After users has rebooted, you can go ahead and install boss. The process is exactly the same, execute `/tmp/config/build_install.sh` (both of these as root), and the software will automatically build and install. After boss installs there are some additional configuration steps that need to happen. Remember rvn-ansbile, well now we need to run `rvn-ansible 3bed boss` on the script [boss_3bed_setup.yml](https://github.com/rcgoodfellow/raven/blob/master/models/3bed/config/boss_3bed_setup.yml). If you are doing deterboot or linux-mfs development you will also need to run [boss-update-preboot.yml](https://github.com/rcgoodfellow/raven/blob/master/models/3bed/config/boss_update_preboot.yml) each time you rebuild ither of them. The post install automation performs futher setup on the testbed that brings it almost to a level of full functionality. Read the file to see what it is up to. 
 
 The update preboot automation sets up and installs the new deter bootloading facilities. These are comprised of a [network boot loader called deterboot](https://github.com/deter-project/deterboot) and a shiny new [linux-based memory file system - MFS](https://github.com/deter-project/linux-mfs) for os-loading and general maintenance. Right now the topology setup assumes you have built these systems separately but have their build directories mounted into the development environment. See the update preboot script and cross reference with the topology to get a feel for how to setup your host filesystem. I will explicitly document this shortly.
 

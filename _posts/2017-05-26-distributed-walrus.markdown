@@ -30,15 +30,15 @@ Once we can concretely express a model of our network environment to test our di
   + Network plumbing
   + Host & network appliance configuration
 - Can the environment be realized purely through virtualization technologies?
-- How do differentiate between the network infrastructure that supports the use of the realization (ssh access, remote SCM such as Ansible) versus the infrastructure under test?
+- How to differentiate between the network infrastructure that supports the use of the realization (ssh access, remote SCM such as Ansible) versus the infrastructure under test?
 
-The focus on holistic models of _interconnected topologies_ as opposed small groups of hand wired machines is what sets the [Raven](https://github.com/rcgoodfellow/raven) virtualization technology  we will be using here apart from others.
+The focus on holistic models of _interconnected topologies_ as opposed small groups of hand wired machines is what sets the [Raven](https://github.com/rcgoodfellow/raven) virtualization technology apart from others.
 
-Once a model has been materialized and it's elements configured. We must _**mount**_ our software within that environment. As developers, we typically have a machine set up to modify and build code on.
+Once a model has been materialized and it's elements configured, we must _**mount**_ our software within that environment. As developers, we typically have a machine set up to modify and build code on.
 
 - How do we synchronize build artifacts from our development environment with installation locations within the environment under test?
 
-The idea is that we would like to build like usual and have the testing infrastructure automatically deploy build artifacts into the testing environment. So we can run tests immediately upon successful build. Ultimately leading to a _**virtuous build-test-modify cycle**_.
+The idea is that we want to build like usual and have the testing infrastructure automatically deploy build artifacts into the testing environment. This way we can run tests immediately upon successful build without having to specialize the build for the testing envrironment, ultimately leading to a _**virtuous build-test-modify cycle**_.
 
 But wait, what about distributed testing? There isn't much out there in the way of multi-language frameworks to help out with this. This article will also introduce the [Walrus Testing Framework](https://github.com/rcgoodfellow/walrustf) that is designed specifically for that purpose.
 
@@ -59,7 +59,7 @@ The first step is creating model of this system. The model is composed of
 - Network topology
 - Host & network appliance configurations
 
-The topology defines our components and their interconnections and the configurations contain the scripts and files necessary to bring up each element of the topology to a state that is functional w.r.t. our test goals.
+The topology defines our components and their interconnections, and the configurations contain the scripts and files necessary to bring up each element of the topology to a state that is functional w.r.t. our test goals.
 
 #### Network Topology
 The network topology is written in Javascript. [Here](https://github.com/rcgoodfellow/raven/blob/master/models/2net/model.js) is the full code for the example we are going to go over here.
@@ -157,16 +157,16 @@ Each test has:
 - **name**
 - **timeout** - in seconds
 - **success criteria** - 3 valued tuple containing
-  + **status**: a diagnostic level that is one of [error, warning, ok]
+  + **status**: a diagnostic level that is one of `[error, warning, ok]`
   + **who**: the participant within the distributed system that produced the message
   + **message**: a diagnostic string
-- **failure criteria** - same as success criteria
+- **failure criteria** - same format as success criteria
 
-When all of the success criteria are observable by the test runner, the test is considered to be a success. If any of the failure criteria are observable by the test runner, the test is considered to have failed. Collectively each triple is referred to as a test diagnostic. Diagnostics are visible to the test runner when it can see them in the Walrus collector. A collector is simply a [Redis](https://redis.io) database with a few [associated conventions](https://github.com/rcgoodfellow/walrustf/blob/master/doc/dspec.md) to support the Walrus test semantics. The Walrus test framework comes with a test runner called [wtf](https://github.com/rcgoodfellow/walrustf/blob/master/wtf/wtf.go) is used to run tests. Just point it at you test JSON file and let it run. The output looks like this
+When all of the success criteria are observable by the test runner, the test is considered to be a success. If any of the failure criteria are observable by the test runner, the test is considered to have failed. Collectively each triple is referred to as a test diagnostic. Diagnostics are visible to the test runner when it can see them in the Walrus collector. A collector is simply a [Redis](https://redis.io) database with a few [associated conventions](https://github.com/rcgoodfellow/walrustf/blob/master/doc/dspec.md) to support the Walrus test semantics. The Walrus test framework comes with a test runner called [wtf](https://github.com/rcgoodfellow/walrustf/blob/master/wtf/wtf.go) that is used to run tests. Just point it at you test JSON file and let it run. The output looks like this
 
 <img src="https://mirror.deterlab.net/rvn/doc/walrus-out.png" style="width:50%" class="center-image" />
 
-WalrusTF adopts a driver model when it comes to language support. Right now there are drivers for C, Python, Perl and Bash. Contributions for other new languages are always welcome. The test we are working with now uses the Bash driver on the `n0` and `n1` nodes. The [code](https://github.com/rcgoodfellow/raven/blob/master/models/2net/config/files/node/pingtest.sh) is very simple, it just tries to ping some node repeatedly on a 1 second interval. If the ping is successful, an `ok` diagnostic is sent to walrus with the hostname of the participant running the test. If the ping is not successful a `warning` diagnostic is sent.
+WalrusTF adopts a driver model when it comes to language support. Right now there are drivers for C, Python, Perl and Bash. Contributions for other new languages are always welcome! The test we are working with now uses the Bash driver on the `n0` and `n1` nodes. The [code](https://github.com/rcgoodfellow/raven/blob/master/models/2net/config/files/node/pingtest.sh) is very simple, it just tries to ping some node repeatedly on a 1 second interval. If the ping is successful, an `ok` diagnostic is sent to walrus with the hostname of the participant running the test. If the ping is not successful a `warning` diagnostic is sent.
 
 ```shell
 echo "starting ping test"
@@ -184,7 +184,7 @@ while true; do
 done
 ```
 
-In concert with the [ansible test launch script](https://github.com/rcgoodfellow/raven/blob/master/models/2net/config/files/walrus/test.yml), now asses whether or not the VLAN control system is doing its job by attempting to create and then destroy virtual network paths between `n0` and `n1` and observing the results of the ping tests. The walrus test file wraps all this up in an automated easy to launch and observe test case.
+In concert with the [ansible test launch script](https://github.com/rcgoodfellow/raven/blob/master/models/2net/config/files/walrus/test.yml), the walrus test definition script now asses whether or not the VLAN control system is doing its job by attempting to create and then destroy virtual network paths between `n0` and `n1` and observing the results of the ping tests. The walrus test definition wraps all this up in an automated easy to launch and observe test case.
 
 ## GLHF
 
