@@ -22,7 +22,7 @@ Raven is a tool for developers and it is still in the early stages. Most things 
 Let's start with the topology we will be using as depicted below.
 <br/>
 <br/>
-![3bed](http://mirror.deterlab.net/rvn/doc/3bed-topo.png)
+![3bed](https://mirror.deterlab.net/rvn/doc/3bed-topo.png)
 <br/>
 <br/>
 This is a very simple testbed topology where:
@@ -217,7 +217,7 @@ If you have raven running on a powerful server machine but work elsewhere like m
 When you have your network plumbing figured out. The web interface should look like the following.
 <br/>
 <br/>
-![rvn](http://mirror.deterlab.net/rvn/doc/rvn-ui.png)
+![rvn](https://mirror.deterlab.net/rvn/doc/rvn-ui.png)
 <br/>
 <br/>
 There are a few buttons to control things at the bottom.
@@ -352,7 +352,7 @@ After you have run these scripts reboot `boss`.
 Once `boss` has rebooted, you can log into the web interface. Because of the way our web code works, you will need to access it through it's actual FQDN. The easiest way to do this is to set an `/etc/hosts/` entry on your host computer and go in through a SOCKS proxy. The defs file that covers the 3bed environment sets the FQDN to `vbed3.deterlab.net` like the following
 <br/>
 <br/>
-![deterui](http://mirror.deterlab.net/rvn/doc/deter-web.png)
+![deterui](https://mirror.deterlab.net/rvn/doc/deter-web.png)
 <br/>
 <br/>
 You can log is as [Admiral Bill Adama](https://en.wikipedia.org/wiki/William_Adama) of the Colonial Fleet using the password `:LKJPOIU`.
@@ -368,7 +368,7 @@ root@tb0:~# virsh vncdisplay 3bed_n0
 Remember to be root or `sudo`-ing when you use `virsh`. The libvirt naming of the nodes is `topology-name_node-name`. That vnc display means you can access the node at port 5906 from the local host. I typically tunnel in from another computer using plain old vanilla ssh tunnels, no SOCKS proxy required with this one. You will need a VNC client, I really like [gnome remote desktop viewer](https://help.gnome.org/users/vinagre/stable/)
 <br/>
 <br/>
-![vncme](http://mirror.deterlab.net/rvn/doc/tbremote.png)
+![vncme](https://mirror.deterlab.net/rvn/doc/tbremote.png)
 <br/>
 <br/>
 Once you reboot the nodes the MFS will automatically register them with boss and it is business as usuall for adding nodes to the testbed through the web interface.

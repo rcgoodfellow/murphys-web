@@ -110,11 +110,46 @@ topo = {
 The Raven configuration subsystem uses [Ansible](https://www.ansible.com). Raven projects are based on workspaces. A workspace is simply a directory that contains a file named `model.js` that contains the components discussed above and directory called `config` that contains a set of Ansible playbooks. Any Ansible playbook that corresponds to the name of a node will be automatically launched on that node by Raven. See [this directory](https://github.com/rcgoodfellow/raven/tree/master/models/2net/config) for example. The file named `nimbus.yml` will be run on node start up by Raven on the nimbus node.
 
 #### Materialization
-This assumes you have set up Raven on your system. [Getting setup](https://github.com/rcgoodfellow/raven/blob/master/README.md#installing) is pretty simple. When you open the model in the Raven web interface you will be greeted with a screen that looks like this.
+This assumes you have set up Raven on your system. [Getting setup](https://github.com/rcgoodfellow/raven/blob/master/README.md#installing) is pretty simple. 
 
-<img src="https://mirror.deterlab.net/rvn/doc/2net-web.png" class="center-image" style="width: 70%" />
+Here is a quick rundown of how to start the raven system that is described in this post and also included in the raven sources as an example.
 
-This particular model assumes that we have the following code repositories in a top level directory called `/space`.
+```shell
+sudo su
+cd raven/models/2net
+
+# grab the source code required for this model and set the mapping environment variables
+source fetch.sh
+
+# build the raven system (creates virtual machines and network descriptions)
+rvn build
+
+# deploy the virtual system
+rvn deploy
+
+# show the status of the virtual nodes
+rvn status
+
+# wait for the virtual nodes and switches to come up
+rvn pingwait control walrus nimbus n0 n1
+
+# show the status of the virtual nodes now that they are up (you will see IP addresses)
+rvn status
+
+# configure the virtual nodes and switches
+rvn configure
+
+# while configure is running, you can open up another shell window and type in
+# rvn status to see how things are progressing
+
+# run some ad-hoc config on a node
+rvn ansible n1 config/n1.yml
+
+# ssh into a node
+eval $(rvn ssh walrus)
+```
+
+This particular model assumes that we have the following code repositories in a top level directory called `/space`. The `fetch.sh` script referenced above will do this for you.
 
 - **walrustf** - [github.com/rcgoodfellow/walrustf](https://github.com/rcgoodfellow/walrustf)
 - **agx** - [github.com/rcgoodfellow/agx](https://github.com/rcgoodfellow/agx)
